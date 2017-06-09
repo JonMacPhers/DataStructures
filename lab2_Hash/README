@@ -1,0 +1,48 @@
+****************************************************
+Jonathan MacPherson		0878619
+The class name			Assignment 1
+June 6th, 2017 			jmacph04@mail.uoguelph.ca
+****************************************************
+
+
+************************
+Program Description
+**************************
+ This program runs and compiles the LinkedListAPI.C file. It comes with a self 
+ test Testfile.c to check and validate the functions of the Linked List. 
+ the LinkedList file comes with many functions for creating and organizing list structures of
+ many different data types
+ 
+ Several functions need to be implimented by the user for them to work appropriately 
+ since the data type going into the linked list is arbitrary, and these functions must be type-cast
+ with the right type of data to work correctly. 
+
+
+************
+Compilation
+************
+ To compile this code:
+ run: make
+
+ To compile the testing program:
+ run: make test
+
+  Detailed Make options:
+
+  make  runs the cppcheck option
+  make prog needs to be altered with your own program file name if you want to use the linked list module
+  make test compiles the Testfile.c program with the library
+  make doxy creates the doxygen documentation in the docs subdirectory
+  make clean removes executable files
+
+****************************
+Known Limitations, Issues and Errors
+****************************
+
+ the function used by the delteItem function pointer in linked-List doesn't do anything. Either build errors or
+ cppcheck errors exist when trying to clear contents of the node, or it auto clears duplicate entities (!?). 
+ 
+ double-deleting lists causes one's computer to explode. 
+ 
+ has not been tested with any other data types besides INT.
+
