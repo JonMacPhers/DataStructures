@@ -2,7 +2,7 @@
 
 int main(/*int argc, char	*argv[]*/)
 {
-	int tableSize = 50;
+	int tableSize = 5;
 	int index = 0;
 	//List* collisionList;
 	//collisionList = initializeList(&printData, &deleteData, &compare);
@@ -14,27 +14,36 @@ int main(/*int argc, char	*argv[]*/)
 	void * Me; 
 	int iteration = 0;
 	int key = 0;
+	int collisionCounter = 0;
 	float socks = 0;
 
-	//printf("\n*** Collision List ***\n");
-
-	//Student student = {"Jon", "Mac", "Eng"};
-	while(iteration<tableSize-20)
+	while(iteration<tableSize)
 	{
-		socks = ((((1+key)*2)+10)/2);
+		socks = ((((1+key)*16.789)+10)/2);
 		Me = &socks;
-		insertData(table, key, &Me);
-		index = hashFunction(tableSize, key);
-		printf("\n\nLocker #%d: %f sock(s)\n\n\n", table->table[index]->key, *(float*)table->table[index]->data);
+		printf("\nKEY %d\n\n", key);
+		collisionCounter = insertData(table, key, Me, collisionCounter);
+		index = table->hashFunction(tableSize, key);
+		printf("\n\nLocker #%d: %.0f socks\n\n\n", key, *(float*)table->table[index]->data);
 
 		key++;
 		iteration++;
 	}
-	//printForward(collisionList);
+	printf("\n\n\n\n\n");
+	int newkey = 0;
 
+	while(newkey<tableSize)
+	{	
+		int index = 0;	
+		index = table->hashFunction(tableSize, newkey);
+		printf("\n\nLocker #%d: %.0f socks\n\n\n", index, *(float*)table->table[index]->data);
+		newkey++;
+	}
+	// Last Value Collides with first index
+	/*key = 7;
 	index = hashFunction(tableSize, key);
-	printf("\n\nLocker #%d: %d sock(s)\n\n\n", table->table[index]->key, *(int*)table->table[index]->data);
-
-
+	removeData(table, key);
+	printf("\n\nLocker #%d: %.0f socks\n\n\n", table->table[index]->key, *(float*)table->table[index]->data);
+	*/
 	return(0);
 }

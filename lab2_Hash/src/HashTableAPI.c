@@ -12,19 +12,18 @@ void deleteData(void *deleteme)
 int hashFunction(int tableSize, int key)
 {/* Take a key and do something to it to get an index */
 	int index = 0;
-	index = key%tableSize;
+	index = (key*2654435761)%(2^32);
 	return index;
 }
 HTable *createTable(int tableSize, int (*hashFunction)(int tableSize, int key), void (*deleteFunction)(void *toBeDeleted), void (*printFunction)(void *toBePrinted))
 {
 	//New Hash Table
 	HTable* hPtr = NULL;
-	int i;
 
 	if(tableSize < 1) return NULL;
 
 	/* Allocate the table itself. */
-	if(( hPtr = malloc(sizeof( HTable* ))) == NULL )
+	if(( hPtr = malloc(sizeof( HTable ))) == NULL )
 	{
 		return NULL;
 	}
@@ -32,10 +31,6 @@ HTable *createTable(int tableSize, int (*hashFunction)(int tableSize, int key), 
 	if( ( hPtr->table = malloc( sizeof( hashNode * ) * tableSize ) ) == NULL )
 	{
 		return NULL;
-	}
-	for( i = 0; i < tableSize; i++ ) {
-		printf("NULL: %d\n\n", i);
-		hPtr->table[i] = NULL;
 	}
 	hPtr->tableSize = tableSize;
 	//Set the function tables to the functions passed in
@@ -88,7 +83,7 @@ int destroyTable( HTable* htable )
 	return 0;
 }
 
-void insertData( HTable * htable, int key, void * toBeAdded )
+int insertData( HTable * htable, int key, void * toBeAdded, int collisionCounter )
 {   
     if(htable != NULL)
     {
@@ -96,72 +91,85 @@ void insertData( HTable * htable, int key, void * toBeAdded )
         int index = htable->hashFunction(htable->tableSize, key);
         if(htable->table[index] != NULL)
         {   // Check the collision list first element, else check the rest
-            printf("COLLISION    key = %d\n", key);
-            if(htable->table[index]->key == key)
-            {printf("COLLISION\n");
-            	int i = 1;
-            	if(htable->table[i] == NULL)
-    			{printf("COLLISION DEALT WITH\n");
-    				htable->table[i] = newData;
-    			}
-            	while(htable->table[i] != NULL)
-        		{printf("COLLISION DEALT WITH\n");
-        			if(htable->table[i] == NULL)
-        			{printf("COLLISION DEALT WITH\n");
-        				htable->table[i] = newData;
-        				htable->table[i]->key = key;
-        			}
-        			i++;
-        		}
-            }
+        	int i = 1;
+        	if(htable->table[i] == NULL)
+        	{printf("whoops\n\n");
+				htable->table[i] = newData;
+        	}
+        	if(htable->table[i] != NULL)
+	    	{
+	    		collisionCounter++;
+	    		printf("Collsion Counter: %d\n\n", collisionCounter);
+	    		return collisionCounter;
+	    	}
+        	while(htable->table[i] != NULL && i < htable->tableSize)
+    		{
+    			i++;
+    		}		
+	    	htable->table[i] = newData;
         }	
-        else
-        {printf("ADDED TO TABLE\n\n");
+        else if(htable->table[index] == NULL)
+        {
         	htable->table[index] = newData;
-        	htable->table[index]->key = key;
         } 
     }   
-}/*
+    return collisionCounter;
+}
 void removeData(HTable* htable, int key )
 {
-    if htable is not null
-        set index to hashFunction( tableSize, key )
-            
-        if htable hashTable[index] exists
-    
-            set node to htable table[index] list head
-            set prev to null
-            while node key is not equal to key
-                set prev to  node
-                set node to node next
-            
-            if node key is equal to key
-                if prev is null
-                    // Head of the list is removed
-                    set htable table[index] next to node next
-                    free node
-                    if hashTable[index] is null
-                        free nodeList
+    if( htable != NULL)
+    {
+        int index = htable->hashFunction(htable->tableSize, key);   
+        if(htable->table[index] != NULL) 
+    	{
+            hashNode* dPtr = htable->table[index];
+            hashNode* prev = NULL;
+            while(dPtr->key != key)
+            {
+                prev = dPtr;
+                dPtr = dPtr->next;
+            }
+            if(dPtr->key == key)
+            {
+                if(prev == NULL) 
+                {    // Head of the list is removed
+                    htable->table[index]->next = dPtr->next;
+                    free(dPtr);
+                    if(htable->table[index] == NULL)
+                    {
+                        free(htable->table[index]);
+                    }
+                }
                 else
-                    set prev next to node next 
-                    free node
+                {
+                    prev->next = dPtr->next; 
+                    free(dPtr);
+                }
+            }
+        }
+    }
 }
 void* lookupData(HTable* htable, int key )
 {
-    if htable is not null
-        set index to hashFunction(  tableSize key )
+    if(htable != NULL)
+    {
+        int index = htable->hashFunction( htable->tableSize, key );
 
-        if htable table[index] does not exist
-            return null;
-
-        set tmpNode equal to htable htable[index] 
-        while( tmpNode not null )
-            if tmpNode key equals key
-                return tmpNode data
-            tmpNode equal to tmpNode next
-
-    return null
-}*/
+        if(htable->table[index] == NULL)
+        {printf("okay WHAT\n");
+            return NULL;
+        }
+        hashNode * temp = htable->table[index]; 
+        while( temp != NULL )
+        {   if(temp->key == key)
+            {  printf("okay DATA\n");
+             	return temp->data;
+            }
+            temp = temp->next;
+    	}printf("okay END\n");
+    }   
+    return NULL;
+}
 /*************LINKED LIST API*************/
 int compare (const void* compare1, const void* compare2)
 {

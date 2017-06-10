@@ -33,13 +33,15 @@ HTable *createTable(int tableSize, int (*hashFunction)(int tableSize, int key), 
 
 hashNode *initializeNode(int key, void *data);
 
-void insertData( HTable * htable, int key, void * toBeAdded );
+int insertData( HTable * htable, int key, void * toBeAdded, int collisionCounter );
+
+void removeData(HTable* htable, int key );
+
+void* lookupData(HTable* htable, int key );
 
 void printData(void *printCar);
 
 void deleteData(void *deleteme);
-
-int hashFunction(int tableSize, int key);
 
 /*************LINKED LIST API*************/
 
