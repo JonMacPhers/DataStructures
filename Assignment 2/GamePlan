@@ -1,0 +1,24 @@
+*Assignment Strategy*
+
+Create a password vault using a hash table API.
+
+Your application will store and retrieve passwords given a system descriptor that is provided by the user. *String Key*
+
+The information will be stored in a data file of your own design.
+
+Your program must have functions to authorize the user to use the program, open a password file and load it into the hash table, start a new password file, add passwords, remove passwords, retrieve passwords and update passwords.
+
+The UI should be constructed using ncurses as the UI library. Consult the ncurses tutorial in the Review section of the course for help with ncurses.
+
+*bonus* If you wish to encrypt passwords, consider using MD5 encryption. You may use code found on the Internet for the password encryption portion of your submission, provided it is well documented and cited. *bonus*
+
+Connect buttons (selections) to functions "insert password, change password, remove password"
+
+Page 1 (Create Account, Sign in, Delete Account)
+
+int hashFunction(int tableSize, char * key)
+{/* Take a key and do something to it to get an index */
+	int index = 0;
+	index = (int)strtol(key, NULL, 10) % tableSize;
+	return index;
+}

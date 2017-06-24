@@ -1,0 +1,37 @@
+****************************************************
+Jonathan MacPherson		0878619
+Data Structures			Lab 2
+June 19th, 2017 			jmacph04@mail.uoguelph.ca
+****************************************************
+
+
+************************
+Program Description
+**************************
+ This program runs and compiles the HashTableAPI.C file. It comes with a self 
+ test hashTest.c to check and validate the functions of the Hash. 
+
+************
+Compilation
+************
+ To compile this code:
+ run: make
+
+ To compile the testing program:
+ run: make test
+
+  Detailed Make options:
+
+  make  runs the cppcheck option
+  make prog needs to be altered with your own program file name if you want to use the linked list module
+  make test compiles the Testfile.c program with the library
+  make doxy creates the doxygen documentation in the docs subdirectory
+  make clean removes executable files
+
+****************************
+Known Limitations, Issues and Errors
+****************************
+
+Unable to fully delete hash table still :,(
+destroyTable(); causes seg fault.
+
