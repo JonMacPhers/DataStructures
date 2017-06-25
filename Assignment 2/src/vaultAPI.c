@@ -162,7 +162,14 @@ int insertData( HTable * htable, char * key, void * toBeAdded, int collisionCoun
         	if(htable->table[i] != NULL)
 	    	{
 	    		collisionCounter++;
-	    		printw("\nCollsion Counter: %d\n\n", collisionCounter);
+	    		int y_coordinate, x_coordinate;
+	    		getyx(stdscr, y_coordinate, x_coordinate);
+	    		mvwprintw (stdscr, y_coordinate, x_coordinate, "Collsion Counter:");
+	    		wmove(stdscr, y_coordinate, x_coordinate+1);
+	    		getyx(stdscr, y_coordinate, x_coordinate);
+	    		printw ("%d", collisionCounter);
+	    		wmove(stdscr, y_coordinate+1, x_coordinate);
+	    		refresh();
 	    		return collisionCounter;
 	    	}
         	while(htable->table[i] != NULL && i < htable->tableSize)
@@ -243,7 +250,7 @@ void removeData (HTable *hashTable, char * key)
 				{
 					hashTable->deleteData(current->data);
 					free(current);
-					printw("Data Deleted\n\n");
+					printMessage1("Data Deleted");
 					return;
 				}
 				if ((current!=NULL)&&(prev==NULL)&&(nextr!=NULL))
@@ -251,7 +258,7 @@ void removeData (HTable *hashTable, char * key)
 					hashTable->table[index] = nextr;
 					hashTable->deleteData(current->data);
 					free(current);
-					printw("Data Deleted\n\n");
+					printMessage1("Data Deleted");
 					return;
 				}
 				// between two items
@@ -260,7 +267,7 @@ void removeData (HTable *hashTable, char * key)
 					prev->next = nextr;
 					hashTable->deleteData(current->data);
 					free(current);
-					printw("Data Deleted\n\n");
+					printMessage1("Data Deleted");
 					return;
 				}
 			}
@@ -272,7 +279,7 @@ void removeData (HTable *hashTable, char * key)
 		{
 			hashTable->deleteData(current->data);
 			free(current);
-			printw("Data Deleted\n\n");
+			printMessage1("Data Deleted");
 			return;
 		}
 	}
@@ -298,7 +305,7 @@ void* lookupData(HTable* htable, char * key )
             }
             temp = temp->next;
     	}
-    	printf("END OF TABLE: DATA NOT FOUND\n");
+    	printMessage1("END OF TABLE: DATA NOT FOUND");
     }   
     return NULL;
 }
@@ -308,7 +315,7 @@ void printMessage2(char * s)
     getyx(stdscr, y_coordinate, x_coordinate);
     if((x_coordinate == 0) && (y_coordinate == 0))
     {
-  		mvwprintw (stdscr, y_coordinate, x_coordinate, s);
+  		wprintw (stdscr, s);
   		wmove(stdscr, y_coordinate+2, 0);
     } 
     else
@@ -326,17 +333,45 @@ void printMessage1(char * s)
     getyx(stdscr, y_coordinate, x_coordinate);
     if((x_coordinate == 0) && (y_coordinate == 0))
     {
-  		mvwprintw (stdscr, y_coordinate, x_coordinate, s);
+  		wprintw (stdscr, s);
   		wmove(stdscr, y_coordinate+1, 0);
     } 
     else
     {   
-	    printy = y_coordinate+1;
+	    printy = y_coordinate;
 	    printx = x_coordinate;
 	    mvwprintw (stdscr, printy, printx, s);
 	    wmove(stdscr, printy+1, 0);
 	    refresh();
 	}
+}
+void printHoriz(char * a, char * b, char * c, char * d)
+{
+    int x_coordinate, y_coordinate;
+    getyx(stdscr, y_coordinate, x_coordinate);
+    mvwprintw (stdscr, y_coordinate, x_coordinate, a);
+    wmove(stdscr, y_coordinate, x_coordinate+1);
+    if(b != NULL)
+    {
+    	getyx(stdscr, y_coordinate, x_coordinate);
+	    mvwprintw (stdscr, y_coordinate, x_coordinate, b);
+	    wmove(stdscr, y_coordinate, x_coordinate+1);
+    }
+    if(c != NULL)
+    {
+    	getyx(stdscr, y_coordinate, x_coordinate);
+	    mvwprintw (stdscr, y_coordinate, x_coordinate, c);
+	    wmove(stdscr, y_coordinate, x_coordinate+1);
+    }
+    if(d != NULL)
+    {
+    	getyx(stdscr, y_coordinate, x_coordinate);
+	    mvwprintw (stdscr, y_coordinate, x_coordinate, d);
+	    wmove(stdscr, y_coordinate, x_coordinate+1);
+    }
+
+    refresh();
+	
 }
 void moveTwoY()
 {

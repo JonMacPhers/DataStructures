@@ -6,31 +6,41 @@
 
 int main() {
 
-	char * adminUsername = "username";
-	char * adminPassword = "password";
+	char * adminUsername = "use";
+	char * adminPassword = "pas";
 	char inputUsername[20];
 	char inputPassword[20];
 
 	initscr();
+	cbreak ();
 
 	printMessage2("Admin Username Required:");
 	getstr(inputUsername);
 	printMessage2("Admin Password Required:");
+	noecho ();
 	getstr(inputPassword);
+	echo();
 	if((strcmp(adminUsername, inputUsername) == 0) && (strcmp(adminPassword, inputPassword) == 0))
 	{
 		int collisionCounter = 0;
 		HTable * UserDB;
 		UserDB = createTable(SIZE, &hashFunction, &deleteData, &printData);
-	    char * message;
-	    char input[100];
-	    int input1;
+
 	    int Loop = 1;
 
 	    while(Loop == 1)
 	    {
-		    message = "Select one of the following, by entering the corresponding value in it's brackets:\n";
+	    	clear();
+	    	char * message;
+	    	char input[100];
+	    	int input1;
+	    	wmove(stdscr,0,0);
+	    	printMessage1("******************************************************************************");
+	    	printMessage1("==============================> Password Vault <==============================");
+	    	printMessage1("******************************************************************************");
+		    message = "Select one of the following, by entering the corresponding value in it's brackets:";
 		    printMessage1(message);
+		    moveTwoY();
 		    message = "-> (1) Store Password";
 		    printMessage1(message);
 		    message = "-> (2) Retrieve Password";
@@ -42,46 +52,50 @@ int main() {
 		    message = "-> (Quit) Quit";
 		    printMessage1(message);
 		    moveTwoY();
-		    moveTwoY();
 		    getstr(input);
+		    moveTwoY();
 		    input1 = (int)strtol(input, NULL, 10);
 		    if(input1 == 1)
 		    {
+		    	char buffer1[100];
 		    	hashNode * UserNodeInsert = NULL;
 		    	UserNodeInsert = malloc(sizeof(hashNode));
 		    	DataObject * UserInsert = NULL;
 		    	UserInsert = malloc(sizeof(DataObject));
 		    	printMessage1("Please create/enter a key for your account :)");
 		    	moveTwoY();
-		    	getstr(input);
-		    	UserNodeInsert->key = malloc(sizeof(char)*strlen(input)+1);
-		    	strcpy(UserNodeInsert->key, input);
-		    	UserInsert->systemDescriptor = malloc(sizeof(char)*strlen(input)+1);
-		    	strcpy(UserInsert->systemDescriptor, input);
+		    	getstr(buffer1);
+		    	moveTwoY();
+		    	UserNodeInsert->key = malloc(sizeof(char)*strlen(buffer1)+1);
+		    	strcpy(UserNodeInsert->key, buffer1);
+		    	UserInsert->systemDescriptor = malloc(sizeof(char)*strlen(buffer1)+1);
+		    	strcpy(UserInsert->systemDescriptor, buffer1);
 		    	printMessage1("Please enter the password you would like to store:");
 		    	moveTwoY();
-		    	getstr(input);
-		    	UserInsert->password = malloc(sizeof(char)*strlen(input)+1); 
-		    	strcpy(UserInsert->password, input);
+		    	getstr(buffer1);
+		    	moveTwoY();
+		    	UserInsert->password = malloc(sizeof(char)*strlen(buffer1)+1); 
+		    	strcpy(UserInsert->password, buffer1);
 		    	
 		    	UserNodeInsert->data = (void*)UserInsert;
 		    	
 		    	collisionCounter = insertData(UserDB, UserInsert->systemDescriptor, UserNodeInsert->data, collisionCounter);
+
+		    	refresh();
 		    }
 		    else if(input1 == 2)
 		    {
+		    	char buffer2[100];
 		    	printMessage1("Please enter your key:");
 		    	moveTwoY();
+		    	getstr(buffer2);
 		    	moveTwoY();
-		    	getstr(input);
-		    	wmove(stdscr, 2, 0);
-		    	if(UserDB->table[hashFunction(UserDB->tableSize, input)] == NULL)
+		    	if(UserDB->table[hashFunction(UserDB->tableSize, buffer2)] == NULL)
 		    	{
-		    		wprintw(stdscr, "Key: %s doesn't match any passwords sorry :'(", input);
-		    		refresh();
+		    		printw("Key: %s doesn't match any passwords sorry :'(", buffer2);
 		    		moveTwoY();
 		    	}
-		    	if(UserDB->table[hashFunction(UserDB->tableSize, input)] != NULL)
+		    	else if(UserDB->table[hashFunction(UserDB->tableSize, buffer2)] != NULL)
 			    {	
 			    	hashNode * UserNodeOutput = NULL;
 			    	DataObject * UserOutput = NULL;
@@ -89,15 +103,15 @@ int main() {
 			    	UserNodeOutput = malloc(sizeof(hashNode));
 			    	UserOutput = malloc(sizeof(DataObject));
 			    	UserCheck = malloc(sizeof(DataObject));
-			    	UserCheck = UserDB->table[UserDB->hashFunction(SIZE, input)]->data;
-			    	UserOutput = lookupData(UserDB, input);
+			    	UserCheck = UserDB->table[UserDB->hashFunction(SIZE, buffer2)]->data;
+			    	UserOutput = lookupData(UserDB, buffer2);
 			    	UserNodeOutput->data = (void*)UserOutput;
 
 			    	if(UserDB->table[UserDB->hashFunction(SIZE, UserCheck->systemDescriptor)] != NULL)
 				    {
 				    	if((UserOutput->password != NULL) && (UserOutput->systemDescriptor != NULL))
 				    	{
-				    		wprintw(stdscr, "Saved Password-> %s", UserOutput->password);
+				    		printw("Saved Password-> %s", UserOutput->password);
 				    		refresh();
 				    		moveTwoY();
 				    	}
@@ -107,10 +121,11 @@ int main() {
 		    	{
 		    		printMessage2("Password not found :$");
 		    	}
-		    	moveTwoY();
+		    	refresh();
 		    }
 		    else if (input1 == 3)
 		    {
+		    	char buffer3[100];
 		    	hashNode * UserNodeInsert = NULL;
 		    	UserNodeInsert = malloc(sizeof(hashNode));
 		    	DataObject * UserInsert = NULL;
@@ -118,37 +133,55 @@ int main() {
 		    	printMessage1("Please enter the key for your password:");
 		    	moveTwoY();
 		    	moveTwoY();
-		    	getstr(input);
-		    	removeData(UserDB, input);
+		    	getstr(buffer3);
+		    	removeData(UserDB, buffer3);
 		    	moveTwoY();
-		    	UserNodeInsert->key = malloc(sizeof(char)*strlen(input)+1);
+		    	UserNodeInsert->key = malloc(sizeof(char)*strlen(buffer3)+1);
 		    	strcpy(UserNodeInsert->key, input);
-		    	UserInsert->systemDescriptor = malloc(sizeof(char)*strlen(input)+1);
-		    	strcpy(UserInsert->systemDescriptor, input);
+		    	UserInsert->systemDescriptor = malloc(sizeof(char)*strlen(buffer3)+1);
+		    	strcpy(UserInsert->systemDescriptor, buffer3);
 		    	printMessage1("Please enter your new password:");
-		    	getstr(input);
+		    	getstr(buffer3);
 		    	moveTwoY();
-		    	UserInsert->password = malloc(sizeof(char)*strlen(input)+1); 
-		    	strcpy(UserInsert->password, input);
+		    	UserInsert->password = malloc(sizeof(char)*strlen(buffer3)+1); 
+		    	strcpy(UserInsert->password, buffer3);
 		    	
 		    	UserNodeInsert->data = (void*)UserInsert;
 		    	
 		    	collisionCounter = insertData(UserDB, UserInsert->systemDescriptor, UserNodeInsert->data, collisionCounter);
 		    	
 		    	moveTwoY();
+		    	refresh();
 		    }
 
 		    else if (input1 == 4)
 		    {
-		    	printMessage1("Please enter the password of the account you would like to delete :'(");
-		    	getstr(input);
-		    	moveTwoY();
-		    	removeData(UserDB, input);
-		    	moveTwoY();
+		    	char buffer4[100];
+		    	printMessage1("Please enter the key of the password you would like to delete :'(");
+		    	getstr(buffer4);
+			    if(UserDB->table[UserDB->hashFunction(SIZE, buffer4)] != NULL)
+			    {	
+			    	moveTwoY();
+		    		wprintw(stdscr, buffer4);
+		    		moveTwoY();
+			    	//moveTwoY();
+			    	//removeData(UserDB, input);
+			    	//moveTwoY();
+
+		    	}
+		    	else if(UserDB->table[UserDB->hashFunction(SIZE, buffer4)] == NULL)
+		    	{
+		    		moveTwoY();
+		    		wprintw(stdscr, "key: %s, doesn't match any passwords.", buffer4);
+		    		moveTwoY();
+		    	}
+		    	refresh();
 		    }
 		    else if (strcmp(input,"Quit") == 0)
 		    {
-		    	printMessage2("Bye Bye :)");
+		    	printMessage1("******************************************************************************");
+	    		printMessage1("==============================> Bye For Now :') <==============================");
+	    		printMessage1("******************************************************************************");
 		    	break;
 		    }
 		    else
@@ -156,6 +189,7 @@ int main() {
 		    	printMessage1("Invalid Input :'(");
 		    	printMessage1("Please try again :')");
 		    }
+		    refresh();
 		}
 		
 	}
@@ -164,7 +198,6 @@ int main() {
 		printMessage2("Invalid admin information");
 	}
 refresh();
-getch(); //does nothing except wait for you to press a character so you can see the results on the screen
 endwin();
 return(0);
 }
