@@ -302,6 +302,48 @@ void* lookupData(HTable* htable, char * key )
     }   
     return NULL;
 }
+void printMessage2(char * s)
+{
+    int x_coordinate, y_coordinate, printy, printx;
+    getyx(stdscr, y_coordinate, x_coordinate);
+    if((x_coordinate == 0) && (y_coordinate == 0))
+    {
+  		mvwprintw (stdscr, y_coordinate, x_coordinate, s);
+  		wmove(stdscr, y_coordinate+2, 0);
+    } 
+    else
+    {   
+	    printy = y_coordinate+2;
+	    printx = x_coordinate;
+	    mvwprintw (stdscr, printy, printx, s);
+	    wmove(stdscr, printy+2, 0);
+	    refresh();
+	}
+}
+void printMessage1(char * s)
+{
+    int x_coordinate, y_coordinate, printy, printx;
+    getyx(stdscr, y_coordinate, x_coordinate);
+    if((x_coordinate == 0) && (y_coordinate == 0))
+    {
+  		mvwprintw (stdscr, y_coordinate, x_coordinate, s);
+  		wmove(stdscr, y_coordinate+1, 0);
+    } 
+    else
+    {   
+	    printy = y_coordinate+1;
+	    printx = x_coordinate;
+	    mvwprintw (stdscr, printy, printx, s);
+	    wmove(stdscr, printy+1, 0);
+	    refresh();
+	}
+}
+void moveTwoY()
+{
+	int x_coordinate, y_coordinate;
+	getyx(stdscr, y_coordinate, x_coordinate);
+	move(y_coordinate+1, x_coordinate);
+}
 /*************LINKED LIST API*************/
 int compare (const void* compare1, const void* compare2)
 {

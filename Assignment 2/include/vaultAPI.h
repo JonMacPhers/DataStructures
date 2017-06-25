@@ -2,6 +2,7 @@
 #ifndef _HASH_API_
 #define _HASH_API_
 
+#include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,6 +28,12 @@ typedef struct hashTable{
     void (* deleteData)(void * toBeDeleted);
     void (* printData)(void * toBePrinted);
 }HTable;
+
+void printMessage2(char * s);
+
+void printMessage1(char * s);
+
+void moveTwoY();
 
 int hashFunction( int tableSize, char * key );
 
