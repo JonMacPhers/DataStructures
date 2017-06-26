@@ -4,8 +4,24 @@
 #include "vaultAPI.h"
 #define SIZE 50
 
-int main() {
+int main(/*int argc, char	*argv[]*/) {
+/*
+	// Parse Text Data
+	FILE* fp;
+	//fp = fopen(argv[1], "r"); ***********DON'T FORGET TO FIX THIS*************
+	fp = fopen("vault.txt", "r");
 
+	if(fp == NULL)
+	{
+		printf("File could not be read\n");
+	}
+	if(fp!=NULL)
+	{
+		while(fgets())
+		char *sample = malloc(sizeof(char *)*length);
+		fread(sample, sizeof(char), length, fp);
+	}
+*/
 	char * adminUsername = "use";
 	char * adminPassword = "pas";
 	char inputUsername[20];
@@ -13,11 +29,11 @@ int main() {
 
 	initscr();
 	cbreak ();
-
-	printMessage2("Admin Username Required:");
-	getstr(inputUsername);
-	printMessage2("Admin Password Required:");
 	noecho ();
+
+	printMessage2("Admin Username Required: ");
+	getstr(inputUsername);
+	printMessage2("Admin Password Required: ");
 	getstr(inputPassword);
 	echo();
 	if((strcmp(adminUsername, inputUsername) == 0) && (strcmp(adminPassword, inputPassword) == 0))
@@ -35,9 +51,9 @@ int main() {
 	    	char input[100];
 	    	int input1;
 	    	wmove(stdscr,0,0);
-	    	printMessage1("******************************************************************************");
-	    	printMessage1("==============================> Password Vault <==============================");
-	    	printMessage1("******************************************************************************");
+	    	printMessage1(" //*****************************************************************************\\");
+	    	printMessage1("||==============================> Password Vault <==============================||");
+	    	printMessage1(" \\*****************************************************************************//");
 		    message = "Select one of the following, by entering the corresponding value in it's brackets:";
 		    printMessage1(message);
 		    moveTwoY();
@@ -94,6 +110,7 @@ int main() {
 		    	{
 		    		printw("Key: %s doesn't match any passwords sorry :'(", buffer2);
 		    		moveTwoY();
+		    		moveTwoY();
 		    	}
 		    	else if(UserDB->table[hashFunction(UserDB->tableSize, buffer2)] != NULL)
 			    {	
@@ -112,7 +129,7 @@ int main() {
 				    	if((UserOutput->password != NULL) && (UserOutput->systemDescriptor != NULL))
 				    	{
 				    		printw("Saved Password-> %s", UserOutput->password);
-				    		refresh();
+				    		moveTwoY();
 				    		moveTwoY();
 				    	}
 				    }
@@ -126,70 +143,79 @@ int main() {
 		    else if (input1 == 3)
 		    {
 		    	char buffer3[100];
-		    	hashNode * UserNodeInsert = NULL;
-		    	UserNodeInsert = malloc(sizeof(hashNode));
-		    	DataObject * UserInsert = NULL;
-		    	UserInsert = malloc(sizeof(DataObject));
+		    	hashNode * UserNodeInsert2 = NULL;
+		    	UserNodeInsert2 = malloc(sizeof(hashNode));
+		    	DataObject * UserInsert2 = NULL;
+		    	UserInsert2 = malloc(sizeof(DataObject));
 		    	printMessage1("Please enter the key for your password:");
 		    	moveTwoY();
-		    	moveTwoY();
-		    	getstr(buffer3);
-		    	removeData(UserDB, buffer3);
-		    	moveTwoY();
-		    	UserNodeInsert->key = malloc(sizeof(char)*strlen(buffer3)+1);
-		    	strcpy(UserNodeInsert->key, input);
-		    	UserInsert->systemDescriptor = malloc(sizeof(char)*strlen(buffer3)+1);
-		    	strcpy(UserInsert->systemDescriptor, buffer3);
-		    	printMessage1("Please enter your new password:");
 		    	getstr(buffer3);
 		    	moveTwoY();
-		    	UserInsert->password = malloc(sizeof(char)*strlen(buffer3)+1); 
-		    	strcpy(UserInsert->password, buffer3);
-		    	
-		    	UserNodeInsert->data = (void*)UserInsert;
-		    	
-		    	collisionCounter = insertData(UserDB, UserInsert->systemDescriptor, UserNodeInsert->data, collisionCounter);
-		    	
-		    	moveTwoY();
-		    	refresh();
+		    	if(UserDB->table[hashFunction(SIZE, buffer3)] == NULL)
+		    	{
+		    		printw("Key: %s doesn't match any passwords sorry :'(", buffer3);
+		    		moveTwoY();
+		    		moveTwoY();
+		    	}
+		    	else if(UserDB->table[hashFunction(UserDB->tableSize, buffer3)] != NULL)
+			    {	
+			    	removeData(UserDB, buffer3);
+			    	moveTwoY();
+			    	UserNodeInsert2->key = malloc(sizeof(char)*strlen(buffer3)+1);
+			    	strcpy(UserNodeInsert2->key, buffer3);
+			    	UserInsert2->systemDescriptor = malloc(sizeof(char)*strlen(buffer3)+1);
+			    	strcpy(UserInsert2->systemDescriptor, buffer3);
+			    	printMessage1("Please enter your new password:");
+			    	moveTwoY();
+			    	getstr(buffer3);
+			    	moveTwoY();
+			    	UserInsert2->password = malloc(sizeof(char)*strlen(buffer3)+1); 
+			    	strcpy(UserInsert2->password, buffer3);
+			    	UserNodeInsert2->data = (void*)UserInsert2;
+			    	collisionCounter = insertData(UserDB, UserInsert2->systemDescriptor, UserNodeInsert2->data, collisionCounter);
+			    	moveTwoY();
+			    	refresh();
+			    }
 		    }
 
 		    else if (input1 == 4)
 		    {
 		    	char buffer4[100];
 		    	printMessage1("Please enter the key of the password you would like to delete :'(");
+		    	moveTwoY();
 		    	getstr(buffer4);
 			    if(UserDB->table[UserDB->hashFunction(SIZE, buffer4)] != NULL)
-			    {	
-			    	moveTwoY();
-		    		wprintw(stdscr, buffer4);
-		    		moveTwoY();
-			    	//moveTwoY();
-			    	//removeData(UserDB, input);
-			    	//moveTwoY();
-
+			    {
+			    	removeData(UserDB, buffer4);
+			    	printMessage2("Deleted");
 		    	}
 		    	else if(UserDB->table[UserDB->hashFunction(SIZE, buffer4)] == NULL)
 		    	{
 		    		moveTwoY();
-		    		wprintw(stdscr, "key: %s, doesn't match any passwords.", buffer4);
+		    		printw("key: %s, doesn't match any passwords.", buffer4);
 		    		moveTwoY();
 		    	}
 		    	refresh();
 		    }
 		    else if (strcmp(input,"Quit") == 0)
 		    {
-		    	printMessage1("******************************************************************************");
-	    		printMessage1("==============================> Bye For Now :') <==============================");
-	    		printMessage1("******************************************************************************");
+		    	printMessage1(" //*****************************************************************************\\");
+	    		printMessage1("||================================> Bye For Now <===============================||");
+	    		printMessage1(" \\*****************************************************************************//");
 		    	break;
 		    }
 		    else
 		    {
 		    	printMessage1("Invalid Input :'(");
-		    	printMessage1("Please try again :')");
+		    	printMessage2("Please try again :')");
 		    }
+		    printMessage1(" //*****************************************************************************\\");
+	    	printMessage1("||==========================> Press Any Key To Continue <=======================||");
+	    	printMessage1(" \\*****************************************************************************//");
 		    refresh();
+		    noecho();
+		    getch();
+		    echo();
 		}
 		
 	}

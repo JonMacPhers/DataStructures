@@ -15,9 +15,11 @@ void printData(void *toBePrinted)
 }
 void deleteData(void *data)
 {
-	//notice the casting to myDataT in order to access the string element
-	//free(((DataObject *)data)->stringElement);
-  	free((DataObject *)data);
+	DataObject * temp = data;
+	free(temp->systemDescriptor);
+	free(temp->password);
+	free(temp);
+	temp = NULL;
 }
 
 int hashFunction(int tableSize, char * key)
@@ -53,13 +55,18 @@ HTable *createTable(int tableSize, int (*hashFunction)(int tableSize, char * key
 hashNode *initializeNode(char * key, void *data)
 {
 	if (data != NULL)
-	{
-		hashNode* node = malloc(sizeof(hashNode));
+	{printMessage2("Yayyyy");
+		hashNode* node = NULL;
+		printMessage2("whooops #111");
+		node = malloc(sizeof(hashNode));
+		printMessage2("whooops #1");
 		node->data = malloc(sizeof(void*));
+		printMessage2("whooops #2");
 		node->key = malloc(sizeof(char)*strlen(key)+1);
 		node->key = key;
+		printMessage2("whooops #3");
 		node->next = malloc(sizeof(hashNode));
-	
+		printMessage2("whooops #4");
 		if ((node->data!=NULL)&&(node->next!=NULL))
 		{
 			node->data = data;
@@ -67,40 +74,59 @@ hashNode *initializeNode(char * key, void *data)
 			return node;
 		}
 		else 
-		{
+		{ 
 			free(node->next);
 			free(node->data);
 			free(node);
 			return NULL;
 		}
 	}
+	printMessage2("whooops");
 	return NULL;
-}/*
-int destroyTable( HTable* htable )
+}
+/*void destroyTable (HTable *hashTable)
 {
-	int i = 0;
-	while(i < htable->tableSize)
-	{	printf("shit 1\n\n");
-		hashNode* temp = htable->table[i];
-		printf("shit 2\n\n");
-		while(temp != NULL)
-		{printf("shit 3\n\n");
-			hashNode* tempDeleteNode = temp;
-			temp = htable->table[i];
-			printf("shit whaaaat\n\n");
-			htable->deleteData((DataObject*)tempDeleteNode->data);
-			printf("shit whaaaat\n\n");
-			htable->deleteData((hashNode*)tempDeleteNode);
-			i++;
-		}
-		i++;
+	Node* tmpPTR = NULL;
+	Node* tmpPTR2 = NULL;
+
+	if (hashTable == NULL)
+	{	
+		return;
 	}
-	printf("shit whaaaat\n\n");
-	htable->deleteData(htable->table);
-	htable->deleteData(htable);
-	printf("\n\n\n******* TABLE TERMINATED *******\n\n\n");
-	return 0;
-}*/
+	if ((hashTable != NULL)&&(hashTable->table == NULL))
+	{
+		free(hashTable);
+		return;
+	}
+	if ((hashTable != NULL)&&(hashTable->table != NULL))
+	{
+		int length = 0;
+		for (length = 0; length<hashTable->size; length++)
+		{
+			if (hashTable->table[length] == NULL)
+			{
+				free(hashTable->table[length]);
+			}
+			if (hashTable->table[length] != NULL)
+			{
+				tmpPTR = hashTable->table[length];
+				while (tmpPTR->next != NULL)
+				{
+					tmpPTR2 = tmpPTR->next;
+					hashTable->destroyData(tmpPTR->data);
+					free(tmpPTR);
+					tmpPTR = tmpPTR2;
+					//printf("Inside while! \n");
+				}
+					hashTable->destroyData(tmpPTR->data);
+					free(tmpPTR);
+					//printf("Outside while!\n");
+			}
+		}
+		free(hashTable);
+		return;
+	}			
+} */
 void destroyTable (HTable *hashTable)
 {
 	hashNode* tmpPtr = NULL;
@@ -147,41 +173,52 @@ void destroyTable (HTable *hashTable)
 	}			
 }
 int insertData( HTable * htable, char * key, void * toBeAdded, int collisionCounter )
-{   
+{   printMessage2("Whoops1");
     if(htable != NULL)
-    {
-        hashNode* newData = initializeNode(key, toBeAdded);
+    {   printMessage2("Whoops2");
+        hashNode* newData = NULL; 
+        newData = initializeNode(key, toBeAdded);
+        printMessage2("Whoops UMM"); 
         int index = htable->hashFunction(htable->tableSize, key);
+        printMessage2("Whoops3");
         if(htable->table[index] != NULL)
         {   // Check the collision list first element, else check the rest
-        	int i = 1;
-        	if(htable->table[i] == NULL)
+        	if(htable->table[index]->next == NULL)
         	{
-				htable->table[i] = newData;
-        	}
-        	if(htable->table[i] != NULL)
-	    	{
+				htable->table[index]->next = newData;
 	    		collisionCounter++;
 	    		int y_coordinate, x_coordinate;
 	    		getyx(stdscr, y_coordinate, x_coordinate);
 	    		mvwprintw (stdscr, y_coordinate, x_coordinate, "Collsion Counter:");
-	    		wmove(stdscr, y_coordinate, x_coordinate+1);
 	    		getyx(stdscr, y_coordinate, x_coordinate);
+	    		wmove(stdscr, y_coordinate, x_coordinate+1);
 	    		printw ("%d", collisionCounter);
-	    		wmove(stdscr, y_coordinate+1, x_coordinate);
+	    		wmove(stdscr, y_coordinate+2, 0);
+	    		refresh();
+	    		return collisionCounter;
+        	}
+        	else if(htable->table[index]->next != NULL)
+	    	{
+	    		hashNode * tempNode = htable->table[index]->next;
+	    		while(tempNode->next != NULL)
+	    		{
+	    			tempNode = tempNode->next;
+	    		}
+    			tempNode = newData;
+    			collisionCounter++;
+	    		int y_coordinate, x_coordinate;
+	    		getyx(stdscr, y_coordinate, x_coordinate);
+	    		mvwprintw (stdscr, y_coordinate, x_coordinate, "Collsion Counter:");
+	    		getyx(stdscr, y_coordinate, x_coordinate);
+	    		wmove(stdscr, y_coordinate, x_coordinate+1);
+	    		printw ("%d", collisionCounter);
+	    		wmove(stdscr, y_coordinate+2, 0);
 	    		refresh();
 	    		return collisionCounter;
 	    	}
-        	while(htable->table[i] != NULL && i < htable->tableSize)
-    		{
-    			i++;
-    		}	
-    		newData->next = htable->table[i+1];	
-	    	htable->table[i] = newData;
-        }	
-        else 
-        {
-        	newData->next = htable->table[index+1];
+        }
+        else if(htable->table[index] == NULL)
+        {printMessage2("Whoopsa");
         	htable->table[index] = newData;
         }
     }   
@@ -221,6 +258,69 @@ void removeData(HTable* htable, int key )
         }
     }
 }*/
+/*void removeData (HTable *hashTable, int key)
+{	
+	if (hashTable == NULL)
+	{
+		return;
+	}
+	int index = hashTable->hashFunction(hashTable->size, key);
+	
+	if (hashTable->table[index] == NULL)
+	{
+		return;
+	}
+	if (hashTable->table[index] != NULL)
+	{
+		// otherwise search for element
+		Node* current = NULL;
+		Node* nextr = NULL;
+		Node* prev = NULL;
+		
+		current = hashTable->table[index];
+		nextr = current->next;
+		
+		while (nextr != NULL)
+		{
+			//found the element
+			if (current->key == key)
+			{
+				//lone item or end of list
+				if (current->next == NULL)
+				{
+					hashTable->destroyData(current->data);
+					free(current);
+					return;
+				}
+				//first element in two element list
+				if ((current!=NULL)&&(prev==NULL)&&(nextr!=NULL))
+				{
+					hashTable->table[index] = nextr;
+					hashTable->destroyData(current->data);
+					free(current);
+					return;
+				}
+				// sandwhiched between two items
+				if ((prev!=NULL)&&(current!=NULL)&&(nextr!=NULL))
+				{
+					prev->next = nextr;
+					hashTable->destroyData(current->data);
+					free(current);
+					return;
+				}
+			}
+			prev = current;
+			current = nextr;
+			nextr = current->next;
+		}
+		if (current->next == NULL)
+		{
+			hashTable->destroyData(current->data);
+			free(current);
+			return;
+		}
+	}
+} */
 void removeData (HTable *hashTable, char * key)
 {	
 	if (hashTable == NULL)
@@ -240,46 +340,36 @@ void removeData (HTable *hashTable, char * key)
 		hashNode* prev = NULL;
 		
 		current = hashTable->table[index];
-		nextr = current->next;
+		nextr = hashTable->table[index]->next;
+
+		hashTable->table[index] = NULL;
 		
 		while (nextr != NULL)
 		{
 			if (current->key == key)
 			{
-				if (current->next == NULL)
+				if ((current!=NULL)&&(nextr!=NULL))
 				{
-					hashTable->deleteData(current->data);
-					free(current);
-					printMessage1("Data Deleted");
-					return;
-				}
-				if ((current!=NULL)&&(prev==NULL)&&(nextr!=NULL))
-				{
-					hashTable->table[index] = nextr;
-					hashTable->deleteData(current->data);
-					free(current);
-					printMessage1("Data Deleted");
-					return;
-				}
-				// between two items
-				if ((prev!=NULL)&&(current!=NULL)&&(nextr!=NULL))
-				{
-					prev->next = nextr;
-					hashTable->deleteData(current->data);
-					free(current);
-					printMessage1("Data Deleted");
-					return;
+					prev = current;
+					current = nextr;
+					nextr = current->next;
+					hashTable->deleteData(prev->data);
+					prev->data = NULL;
+					free(prev->key);
+					prev->key = NULL;
+					free(prev);
+					prev = NULL;
 				}
 			}
-			prev = current;
-			current = nextr;
-			nextr = current->next;
 		}
-		if (current->next == NULL)
+		if (nextr == NULL)
 		{
 			hashTable->deleteData(current->data);
+			current->data = NULL;
+			free(current->key);
+			current->key = NULL;
 			free(current);
-			printMessage1("Data Deleted");
+			current = NULL;
 			return;
 		}
 	}
@@ -292,92 +382,74 @@ void* lookupData(HTable* htable, char * key )
 
         if(htable->table[index] == NULL)
         {
-            return NULL;
+            printMessage1("DATA NOT FOUND");
         }
-        hashNode * temp = htable->table[index]; 
-        int loop = 1;
-        while( loop == 1 )
+        hashNode * temp = htable->table[index]->next;
+		if(temp != NULL && (strcmp(temp->key, key) == 0))
+		{	
+			int Counter = 1;
+			DataObject * CollisionData = NULL;
+			CollisionData = malloc(sizeof(DataObject));
+			while(temp != NULL && (strcmp(temp->key, key) == 0))
+			{
+				CollisionData = temp->data;
+				printw("Collision # %d Saved Password-> %s", Counter, CollisionData->password);
+				moveTwoY();
+				moveTwoY();
+				Counter++;
+				temp = temp->next;
+			}
+		}
+		if(strcmp(htable->table[index]->key, key) == 0)
         {
-        	if(strcmp(temp->key, key) == 0)
-            {
-             	loop = 0;
-             	return temp->data;
-            }
-            temp = temp->next;
-    	}
-    	printMessage1("END OF TABLE: DATA NOT FOUND");
-    }   
+         	return htable->table[index]->data;
+        }
+    }
+    else if(htable == NULL)
+    {   
+    	printMessage1("No Table");
+    }
     return NULL;
 }
 void printMessage2(char * s)
 {
-    int x_coordinate, y_coordinate, printy, printx;
-    getyx(stdscr, y_coordinate, x_coordinate);
-    if((x_coordinate == 0) && (y_coordinate == 0))
+    int x, y;
+    getyx(stdscr, y, x);
+    if((x == 0) && (y == 0))
     {
   		wprintw (stdscr, s);
-  		wmove(stdscr, y_coordinate+2, 0);
+  		wmove(stdscr, y+2, 0);
     } 
     else
     {   
-	    printy = y_coordinate+2;
-	    printx = x_coordinate;
-	    mvwprintw (stdscr, printy, printx, s);
-	    wmove(stdscr, printy+2, 0);
+    	wmove(stdscr, y+1, 0);
+    	getyx(stdscr, y, x);
+	    mvwprintw (stdscr, y, x, s);
+	    wmove(stdscr, y+2, 0);
 	    refresh();
 	}
 }
 void printMessage1(char * s)
 {
-    int x_coordinate, y_coordinate, printy, printx;
-    getyx(stdscr, y_coordinate, x_coordinate);
-    if((x_coordinate == 0) && (y_coordinate == 0))
+    int x, y;
+    getyx(stdscr, y, x);
+    if((x == 0) && (y == 0))
     {
   		wprintw (stdscr, s);
-  		wmove(stdscr, y_coordinate+1, 0);
+  		wmove(stdscr, y+1, 0);
     } 
     else
-    {   
-	    printy = y_coordinate;
-	    printx = x_coordinate;
-	    mvwprintw (stdscr, printy, printx, s);
-	    wmove(stdscr, printy+1, 0);
+    {  
+	    mvwprintw (stdscr, y, x, s);
+	    wmove(stdscr, y+1, 0);
 	    refresh();
 	}
-}
-void printHoriz(char * a, char * b, char * c, char * d)
-{
-    int x_coordinate, y_coordinate;
-    getyx(stdscr, y_coordinate, x_coordinate);
-    mvwprintw (stdscr, y_coordinate, x_coordinate, a);
-    wmove(stdscr, y_coordinate, x_coordinate+1);
-    if(b != NULL)
-    {
-    	getyx(stdscr, y_coordinate, x_coordinate);
-	    mvwprintw (stdscr, y_coordinate, x_coordinate, b);
-	    wmove(stdscr, y_coordinate, x_coordinate+1);
-    }
-    if(c != NULL)
-    {
-    	getyx(stdscr, y_coordinate, x_coordinate);
-	    mvwprintw (stdscr, y_coordinate, x_coordinate, c);
-	    wmove(stdscr, y_coordinate, x_coordinate+1);
-    }
-    if(d != NULL)
-    {
-    	getyx(stdscr, y_coordinate, x_coordinate);
-	    mvwprintw (stdscr, y_coordinate, x_coordinate, d);
-	    wmove(stdscr, y_coordinate, x_coordinate+1);
-    }
-
-    refresh();
-	
 }
 void moveTwoY()
 {
 	int x_coordinate, y_coordinate;
 	getyx(stdscr, y_coordinate, x_coordinate);
-	move(y_coordinate+1, x_coordinate);
+	move(y_coordinate+1, x_coordinate - x_coordinate);
 }
 /*************LINKED LIST API*************/
 int compare (const void* compare1, const void* compare2)
