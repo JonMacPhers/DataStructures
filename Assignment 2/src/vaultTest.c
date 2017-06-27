@@ -13,17 +13,17 @@ This is the main function for the CIS*2520 Second assignment. Inside we are to c
 
 int main() {
 
-	char * adminUsername = "use";
-	char * adminPassword = "pas";
+	char * adminUsername = "socs";
+	char * adminPassword = "socs";
 	char inputUsername[20];
 	char inputPassword[20];
 
 	initscr();
 	cbreak ();
-	noecho ();
 
 	printMessage2("Admin Username Required: ");
 	getstr(inputUsername);
+	noecho ();
 	printMessage2("Admin Password Required: ");
 	getstr(inputPassword);
 	echo();
@@ -206,6 +206,8 @@ int main() {
 		    	{
 		    		moveTwoY();
 		    		printw("key: %s, doesn't match any passwords.", buffer4);
+		    		moveTwoY();
+		    		moveTwoY();
 		    		moveTwoY();
 		    	}
 		    	refresh();
