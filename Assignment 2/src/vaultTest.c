@@ -1,27 +1,18 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>
 #include "vaultAPI.h"
 #define SIZE 50
 
-int main(/*int argc, char	*argv[]*/) {
-/*
-	// Parse Text Data
-	FILE* fp;
-	//fp = fopen(argv[1], "r"); ***********DON'T FORGET TO FIX THIS*************
-	fp = fopen("vault.txt", "r");
-
-	if(fp == NULL)
-	{
-		printf("File could not be read\n");
-	}
-	if(fp!=NULL)
-	{
-		while(fgets())
-		char *sample = malloc(sizeof(char *)*length);
-		fread(sample, sizeof(char), length, fp);
-	}
+/**
+This is the main function for the CIS*2520 Second assignment. Inside we are to create a Hash Table for storing passwords tied to keys inside the hash table.
+- Jonathan Macpherson
 */
+
+int main() {
+
 	char * adminUsername = "use";
 	char * adminPassword = "pas";
 	char inputUsername[20];
@@ -42,10 +33,25 @@ int main(/*int argc, char	*argv[]*/) {
 		HTable * UserDB;
 		UserDB = createTable(SIZE, &hashFunction, &deleteData, &printData);
 
+		// Parse Text Data
+		FILE* fp;
+		fp = fopen("vault.txt", "r");
+
+		if(fp == NULL)
+		{
+			printf("File could not be read\n");
+		}
+		if(fp != NULL)
+		{
+			parseFile(UserDB, fp, collisionCounter);
+		}
+
 	    int Loop = 1;
 
+	    //Loops until Quit is entered
 	    while(Loop == 1)
 	    {
+	    	//This loop is used as the Command loop, it checks all the possibilities of entries into the main menu for validation
 	    	clear();
 	    	char * message;
 	    	char input[100];
@@ -73,6 +79,7 @@ int main(/*int argc, char	*argv[]*/) {
 		    input1 = (int)strtol(input, NULL, 10);
 		    if(input1 == 1)
 		    {
+		    	//Control statement for Inserting new node into the table
 		    	char buffer1[100];
 		    	hashNode * UserNodeInsert = NULL;
 		    	UserNodeInsert = malloc(sizeof(hashNode));
@@ -101,6 +108,7 @@ int main(/*int argc, char	*argv[]*/) {
 		    }
 		    else if(input1 == 2)
 		    {
+		    	//Control statement for searching for a node
 		    	char buffer2[100];
 		    	printMessage1("Please enter your key:");
 		    	moveTwoY();
@@ -142,6 +150,7 @@ int main(/*int argc, char	*argv[]*/) {
 		    }
 		    else if (input1 == 3)
 		    {
+		    	//Control statement for editing a node
 		    	char buffer3[100];
 		    	hashNode * UserNodeInsert2 = NULL;
 		    	UserNodeInsert2 = malloc(sizeof(hashNode));
@@ -161,25 +170,29 @@ int main(/*int argc, char	*argv[]*/) {
 			    {	
 			    	removeData(UserDB, buffer3);
 			    	moveTwoY();
-			    	UserNodeInsert2->key = malloc(sizeof(char)*strlen(buffer3)+1);
-			    	strcpy(UserNodeInsert2->key, buffer3);
-			    	UserInsert2->systemDescriptor = malloc(sizeof(char)*strlen(buffer3)+1);
-			    	strcpy(UserInsert2->systemDescriptor, buffer3);
-			    	printMessage1("Please enter your new password:");
-			    	moveTwoY();
-			    	getstr(buffer3);
-			    	moveTwoY();
-			    	UserInsert2->password = malloc(sizeof(char)*strlen(buffer3)+1); 
-			    	strcpy(UserInsert2->password, buffer3);
-			    	UserNodeInsert2->data = (void*)UserInsert2;
-			    	collisionCounter = insertData(UserDB, UserInsert2->systemDescriptor, UserNodeInsert2->data, collisionCounter);
-			    	moveTwoY();
-			    	refresh();
+			    	if(UserDB->table[hashFunction(UserDB->tableSize, buffer3)] == NULL)
+			    	{
+			    		UserNodeInsert2->key = malloc(sizeof(char)*strlen(buffer3)+1);
+				    	strcpy(UserNodeInsert2->key, buffer3);
+				    	UserInsert2->systemDescriptor = malloc(sizeof(char)*strlen(buffer3)+1);
+				    	strcpy(UserInsert2->systemDescriptor, buffer3);
+				    	printMessage1("Please enter your new password:");
+				    	moveTwoY();
+				    	getstr(buffer3);
+				    	moveTwoY();
+				    	UserInsert2->password = malloc(sizeof(char)*strlen(buffer3)+1); 
+				    	strcpy(UserInsert2->password, buffer3);
+				    	UserNodeInsert2->data = (void*)UserInsert2;
+				    	collisionCounter = insertData(UserDB, UserInsert2->systemDescriptor, UserNodeInsert2->data, collisionCounter);
+				    	moveTwoY();
+				    	refresh();
+			    	}
 			    }
 		    }
 
 		    else if (input1 == 4)
 		    {
+		    	//Control statement for deleting a node
 		    	char buffer4[100];
 		    	printMessage1("Please enter the key of the password you would like to delete :'(");
 		    	moveTwoY();
@@ -217,7 +230,10 @@ int main(/*int argc, char	*argv[]*/) {
 		    getch();
 		    echo();
 		}
-		
+	FILE * print;
+	print = fopen("vault.txt", "w");
+	fprintTable(UserDB, print);
+	fclose(print);	
 	}
 	else if((strcmp(adminUsername, inputUsername) != 0) && (strcmp(adminPassword, inputPassword) != 0))
 	{
@@ -227,86 +243,3 @@ refresh();
 endwin();
 return(0);
 }
-
-/*to use this example program,  cut/paste any one of the
-examples into the main method above.  put it between the comments.
-compile and run to see what happens.   You'll have to delete one to try 
-the next one*/
-
-/*---------------------------------------
-example one
----------------------------------------*/
-/*
-
-initscr();	//creates stdscr "std screen"
-printw("Hello World");
-
-*/
-/*---------------------------------------
-example two
----------------------------------------*/
-/*
-
-initscr();
-for (i=1; i<10; i++)
-{
-   move(i, i*5);
-   printw("Hello World");
-
-}
-
-
-*/
-
-/*---------------------------------------
-example three
----------------------------------------*/
-/* 
-
-initscr();
-move(4, 15);
-printw("Hello World")*/
-
-
-
-
-/*---------------------------------------
-example four
----------------------------------------*/
-
-/*
-
-  int rows;
-  int cols; 
-  char * message;
-  char input[5];
-  int i;
-  int tall;
-  int wide;
- 
-  initscr();
-  getmaxyx(stdscr, rows, cols);
-  message = "Enter the height ";
-  mvprintw(rows-2, 0, "%s", message);
-  getstr(input);
-  tall = (int)strtol(input, NULL, 10);
-  message = "Enter the width    ";
-  mvprintw(rows-2, 0, "%s", message);
-  getstr(input);
-  wide = (int)strtol(input, NULL, 10);
-  for (i=0; i<wide; i++)
-    {
-      mvaddch(0, i, '#');
-    }
-   for (i=0; i<tall; i++)
-   {
-     mvaddch(i, 0, '#');
-     mvaddch(i, wide, '#');
-   }
-   for (i=0; i<wide; i++)
-    {
-      mvaddch(tall, i, '#');
-    }
-
-
-*/

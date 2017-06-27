@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 
 /*************HASH TABLE API*************/
 typedef struct listNode{
@@ -28,6 +27,8 @@ typedef struct hashTable{
     void (* deleteData)(void * toBeDeleted);
     void (* printData)(void * toBePrinted);
 }HTable;
+
+HTable * parseFile(HTable * htable, FILE * ptr, int collisionCounter);
 
 void printMessage2(char * s);
 
@@ -53,26 +54,9 @@ void deleteData(void *deleteme);
 
 void destroyTable( HTable* htable );
 
-void printTable(HTable * htable);
+void fprintTable(HTable * htable, FILE * file);
 
-/*************LINKED LIST API*************/
-
-int compare (const void* compare1, const void* compare2);
-
-typedef struct listHead{
-    hashNode *head;
-    hashNode *tail;
-    void (*deleteData)(void *toBeDeleted);
-    int (*compare)(const void *first,const void *second);
-    void (*printData)(void *toBePrinted);
-}List;
-
-List *initializeList(void (*printFunction)(void *toBePrinted),void (*deleteFunction)(void *toBeDeleted),int (*compareFunction)(const void *first,const void *second));
-
-hashNode *initializeListNode(void *data);
-
-//void insertFront(List *list, void *toBeAdded);
-
-//void printForward(List *list);
+/********************************************************************************/
+/********************************************************************************/
 
 #endif
