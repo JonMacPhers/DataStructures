@@ -1,0 +1,36 @@
+****************************************************
+Jonathan MacPherson		0878619
+Data Structures			Assignment 2
+June 27th, 2017 			jmacph04@mail.uoguelph.ca
+****************************************************
+
+
+************************
+Program Description
+**************************
+ This program runs and compiles the vaultTest.C and vaultAPI.c files. 
+
+ ADMIN USERNAME : socs
+ ADMIN PASSWORD : socs
+
+************
+Compilation
+************
+ To compile this code:
+ run: make
+
+
+  Detailed Make options:
+
+  make compiles the code
+  make prog needs to be altered with your own program file name if you want to use the linked list module
+  make cppcheck runs cppcheck
+  make doxy creates the doxygen documentation in the docs subdirectory
+  make clean removes executable files
+
+****************************
+Known Limitations, Issues and Errors
+****************************
+
+Seems to be good to me :D
+
