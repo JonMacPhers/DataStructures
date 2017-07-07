@@ -30,7 +30,7 @@ int main() {
 
 	insertHeapNode( heap, 0, &input);
 
-	printf("\n%d\n\n", *(int*)(heap->heap->data));
+	printf("\n Root Data = %d\n\n", *(int*)(heap->heap->data));
 
 	insertHeapNode( heap, 2, &input3);
 	printf("\n\nHMMMMMM\n\n");

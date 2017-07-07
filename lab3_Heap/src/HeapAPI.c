@@ -141,6 +141,7 @@ void insertHeapNode( Heap * h, int key, void * data )
 		newNode = initializeNode( key, data );
 		if(temp->data == NULL)
 		{// ROOT OF TREE
+			printf("\n Root Established\n\n");
 			h->heap = newNode;
 			h->lastPosition = newNode;
 		}
@@ -214,18 +215,18 @@ void insertHeapNode( Heap * h, int key, void * data )
 			{//Min Heap
 				if(data < h->lastPosition->data)
 				{
-					printf("\nMIN less than\n\n");
+					printf("\n MIN less than\n\n");
 				}
 				else if(data > h->lastPosition->data)
 				{
-					printf("\nMIN greater than\n\n");
+					printf("\n MIN greater than\n\n");
 				}
 			}
 		}
 		return;
 	}
 	else
-		printf("\nNo Heap Found\n\n");
+		printf("\n No Heap Found\n\n");
 		return;
 }
 
@@ -240,68 +241,74 @@ Heap * heapifyData( Heap * h )
 }
 void lessGreater(Heap * h, heapNode * newNode, void * data, heapNode * oldTemp)
 {
-	heapNode * temp;
-	if(*(int*)data > *(int*)(oldTemp->data))
-	{// left < right
-		temp = oldTemp->right;
-		if(temp->data == NULL)
-		{
-			printf("\nLevel # greater than: RIGHT\n\n");
-			newNode->parent = temp;
-			temp->right = newNode;
+	if(oldTemp != NULL)
+	{
+		heapNode * temp;
+		if(*(int*)data > *(int*)(oldTemp->data))
+		{// left < right
+			temp = oldTemp->right;
+			if(temp->data == NULL)
+			{
+				printf("\n Level # greater than: RIGHT\n\n");
+				newNode->parent = oldTemp;
+				temp = newNode;
+			}
+			else if(temp->data != NULL)
+			{
+				greaterLess(h, newNode, data, temp);
+			}
 		}
-		else if(temp->data != NULL)
-		{
-			greaterLess(h, newNode, data, temp);
-		}
-	}
-	else if(*(int*)data < *(int*)(oldTemp->data))
-	{// left < right
-		temp = oldTemp->left;
-		if(temp->data == NULL)
-		{
-			printf("\nLevel # less than: LEFT\n\n");
-			newNode->parent = temp;
-			temp->left = newNode;
-			h->lastPosition = newNode;
-		}
-		else if(temp->data != NULL)
-		{
-			greaterLess(h, newNode, data, temp);
+		else if(*(int*)data < *(int*)(oldTemp->data))
+		{// left < right
+			temp = oldTemp->left;
+			if(temp->data == NULL)
+			{
+				printf("\n Level # less than: LEFT\n\n");
+				newNode->parent = oldTemp;
+				temp = newNode;
+				h->lastPosition = newNode;
+			}
+			else if(temp->data != NULL)
+			{
+				greaterLess(h, newNode, data, temp);
+			}
 		}
 	}
 }
 
 void greaterLess(Heap * h, heapNode * newNode, void * data, heapNode * oldTemp)
 {
-	heapNode * temp;
-	if(*(int*)data < *(int*)(oldTemp->data))
-	{// left > right
-		temp = oldTemp->right;
-		if(temp->data == NULL)
-		{
-			printf("\nLevel # less than: RIGHT\n\n");
-			newNode->parent = temp;
-			temp->right = newNode;
+	if(oldTemp != NULL)
+	{
+		heapNode * temp;
+		if(*(int*)data < *(int*)(oldTemp->data))
+		{// left > right
+			temp = oldTemp->right;
+			if(temp->data == NULL)
+			{
+				printf("\n Level # less than: RIGHT\n\n");
+				newNode->parent = oldTemp;
+				temp = newNode;
+			}
+			else if(temp->data != NULL)
+			{
+				lessGreater(h, newNode, data, temp);
+			}
 		}
-		else if(temp->data != NULL)
-		{
-			lessGreater(h, newNode, data, temp);
-		}
-	}
-	else if(*(int*)data > *(int*)(oldTemp->data))
-	{// left > right
-		temp = oldTemp->left;
-		if(temp->data == NULL)
-		{
-			printf("\nLevel # greater than: LEFT\n\n");
-			newNode->parent = temp;
-			temp->left = newNode;
-			h->lastPosition = newNode;
-		}
-		else if(temp->data != NULL)
-		{
-			lessGreater(h, newNode, data, temp);
+		else if(*(int*)data > *(int*)(oldTemp->data))
+		{// left > right
+			temp = oldTemp->left;
+			if(temp->data == NULL)
+			{
+				printf("\n Level # greater than: LEFT\n\n");
+				newNode->parent = oldTemp;
+				temp = newNode;
+				h->lastPosition = newNode;
+			}
+			else if(temp->data != NULL)
+			{
+				lessGreater(h, newNode, data, temp);
+			}
 		}
 	}
 }
